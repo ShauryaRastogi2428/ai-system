@@ -16,17 +16,17 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// CORS (production ready)
+// 🔥 FIXED CORS (more stable for Render)
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "*",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
 
-// Test route
+// Health check route (important for Render monitoring)
 app.get("/", (req, res) => {
-  res.send("AI Recruiter Backend Running");
+  res.status(200).send("AI Recruiter Backend Running 🚀");
 });
 
 // Routes
