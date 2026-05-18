@@ -19,14 +19,25 @@ const app = express();
 app.use(express.json());
 
 // ========================
-// 🔥 CORS FIX (FINAL)
+// 🔥 CORS (PRODUCTION FIX)
 // ========================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ai-system-98ee.onrender.com", // frontend render URL
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://ai-system-1-w3ix.onrender.com"
-    ],
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
@@ -36,21 +47,21 @@ app.use(
 app.options("*", cors());
 
 // ========================
-// 🔥 HEALTH CHECK ROUTE
+// 🔥 HEALTH CHECK
 // ========================
 app.get("/", (req, res) => {
   res.status(200).send("AI Recruiter Backend Running 🚀");
 });
 
 // ========================
-// 🔥 API ROUTES
+// 🔥 ROUTES
 // ========================
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/ai", aiRoutes);
 
 // ========================
-// 🔥 DATABASE + SERVER START
+// 🔥 DB + SERVER START
 // ========================
 mongoose
   .connect(process.env.MONGO_URI)
