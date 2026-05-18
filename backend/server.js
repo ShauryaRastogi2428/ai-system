@@ -13,28 +13,45 @@ const aiRoutes = require("./routes/aiRoutes");
 
 const app = express();
 
-// Middleware
+// ========================
+// 🔥 MIDDLEWARE
+// ========================
 app.use(express.json());
 
-// 🔥 FIXED CORS (more stable for Render)
+// ========================
+// 🔥 CORS FIX (FINAL)
+// ========================
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      "http://localhost:5173",
+      "https://ai-system-1-w3ix.onrender.com"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
 
-// Health check route (important for Render monitoring)
+// Preflight support
+app.options("*", cors());
+
+// ========================
+// 🔥 HEALTH CHECK ROUTE
+// ========================
 app.get("/", (req, res) => {
   res.status(200).send("AI Recruiter Backend Running 🚀");
 });
 
-// Routes
+// ========================
+// 🔥 API ROUTES
+// ========================
 app.use("/api/candidates", candidateRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/ai", aiRoutes);
 
-// MongoDB + Server start
+// ========================
+// 🔥 DATABASE + SERVER START
+// ========================
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
